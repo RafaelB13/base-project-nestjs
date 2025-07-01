@@ -1,42 +1,55 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcryptjs';
+import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
-import { User } from './entities/user.entity';
+import { User, UserRole } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
-  private users: User[] = [];
-  private currentId = 1;
+  constructor(
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
+  ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+    // Usar salt rounds mais alto para maior segurança
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 12);
 
-    const user = new User({
-      id: this.currentId++,
+    const user = this.usersRepository.create({
       email: createUserDto.email,
       username: createUserDto.username,
       password: hashedPassword,
-      createdAt: new Date(),
-      updatedAt: new Date(),
     });
 
-    this.users.push(user);
-    return user;
+    return this.usersRepository.save(user);
   }
 
-  findByEmail(email: string): User | undefined {
-    return this.users.find((user) => user.email === email);
+  async findByEmail(email: string): Promise<User | null> {
+    return this.usersRepository.findOne({ where: { email } });
   }
 
-  findById(id: number): User | undefined {
-    return this.users.find((user) => user.id === id);
+  async findById(id: number): Promise<User | null> {
+    return this.usersRepository.findOne({ where: { id } });
   }
 
-  findAll(): Omit<User, 'password'>[] {
-    return this.users.map((user) => {
-      const { password, ...result } = user;
-      return result;
+  async findAll(): Promise<Omit<User, 'password'>[]> {
+    const users = await this.usersRepository.find({
+      select: ['id', 'email', 'username', 'role', 'createdAt', 'updatedAt'],
     });
+    return users;
+  }
+
+  async getTotalUsers(): Promise<number> {
+    return this.usersRepository.count();
+  }
+
+  async getAdminUsers(): Promise<Omit<User, 'password'>[]> {
+    const users = await this.usersRepository.find({
+      where: { role: UserRole.ADMIN },
+      select: ['id', 'email', 'username', 'role', 'createdAt', 'updatedAt'],
+    });
+    return users;
   }
 
   async validatePassword(

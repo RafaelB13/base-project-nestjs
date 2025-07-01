@@ -20,7 +20,7 @@ export class AuthService {
     email: string,
     password: string,
   ): Promise<Omit<User, 'password'> | null> {
-    const user = this.usersService.findByEmail(email);
+    const user = await this.usersService.findByEmail(email);
     if (
       user &&
       (await this.usersService.validatePassword(password, user.password))
@@ -45,7 +45,9 @@ export class AuthService {
 
   async register(createUserDto: CreateUserDto): Promise<RegisterResponse> {
     // Verificar se o usuário já existe
-    const existingUser = this.usersService.findByEmail(createUserDto.email);
+    const existingUser = await this.usersService.findByEmail(
+      createUserDto.email,
+    );
     if (existingUser) {
       throw new UnauthorizedException('User already exists');
     }
@@ -62,7 +64,7 @@ export class AuthService {
     };
   }
 
-  getProfile(userId: number): User | undefined {
+  async getProfile(userId: number): Promise<User | null> {
     return this.usersService.findById(userId);
   }
 }

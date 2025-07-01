@@ -14,6 +14,13 @@ services:
       - NODE_ENV=development
       - JWT_SECRET=meu_jwt_secret_muito_seguro_para_desenvolvimento
       - PORT=3000
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USERNAME=devuser
+      - DB_PASSWORD=devpass
+      - DB_NAME=upload_s3_dev
+      - DATABASE_URL=postgresql://devuser:devpass@postgres:5432/upload_s3_dev
+      - REDIS_URL=redis://redis:6379
     volumes:
       # Volume para hot reload - mapeia código fonte
       - .:/app

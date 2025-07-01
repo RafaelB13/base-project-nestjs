@@ -28,6 +28,6 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     if (!user || user instanceof Error) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    return user as Omit<User, 'password'>;
+    return user;
   }
 }
