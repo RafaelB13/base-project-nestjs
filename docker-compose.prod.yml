@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  # Aplicação NestJS para produção
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: upload-s3-prod
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - JWT_SECRET=${JWT_SECRET}
+      - PORT=3000
+      - DATABASE_URL=postgresql://produser:prodpass@postgres:5432/upload_s3_prod
+      - REDIS_URL=redis://redis:6379
+    networks:
+      - app-network
+    restart: unless-stopped
+    depends_on:
+      - redis
+      - postgres
+
+  # PostgreSQL Database para produção
+  postgres:
+    image: postgres:15-alpine
+    container_name: upload-s3-postgres-prod
+    environment:
+      POSTGRES_USER: produser
+      POSTGRES_PASSWORD: prodpass
+      POSTGRES_DB: upload_s3_prod
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # Redis para cache e sessões
+  redis:
+    image: redis:7-alpine
+    container_name: upload-s3-redis-prod
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_prod_data:/data
+    networks:
+      - app-network
+    restart: unless-stopped
+
+volumes:
+  postgres_prod_data:
+  redis_prod_data:
+
+networks:
+  app-network:
+    driver: bridge

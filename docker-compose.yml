@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  # Aplicação NestJS para desenvolvimento
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: upload-s3-dev
+    ports:
+      - "3000:3000"
+      - "9229:9229"  # Porta para debugging
+    environment:
+      - NODE_ENV=development
+      - JWT_SECRET=meu_jwt_secret_muito_seguro_para_desenvolvimento
+      - PORT=3000
+    volumes:
+      # Volume para hot reload - mapeia código fonte
+      - .:/app
+      - /app/node_modules  # Volume anônimo para node_modules
+    networks:
+      - app-network
+    command: npm run start:dev
+    restart: unless-stopped
+    depends_on:
+      - redis
+      - postgres
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: upload-s3-postgres
+    environment:
+      POSTGRES_USER: devuser
+      POSTGRES_PASSWORD: devpass
+      POSTGRES_DB: upload_s3_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # Redis para cache e sessões
+  redis:
+    image: redis:7-alpine
+    container_name: upload-s3-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # PgAdmin para gerenciamento do PostgreSQL
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: upload-s3-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "8080:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - app-network
+    restart: unless-stopped
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+  redis_data:
+  pgadmin_data:
+
+networks:
+  app-network:
+    driver: bridge
