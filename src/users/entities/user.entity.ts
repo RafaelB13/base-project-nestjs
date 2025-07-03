@@ -32,6 +32,9 @@ export class User {
   })
   role: UserRole;
 
+  @Column({ nullable: true })
+  name?: string; // Campo opcional, pode ser nulo ou vazio
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

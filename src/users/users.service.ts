@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcryptjs';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserRole } from './entities/user.entity';
 
 @Injectable()
@@ -20,6 +21,8 @@ export class UsersService {
       email: createUserDto.email,
       username: createUserDto.username,
       password: hashedPassword,
+      name: createUserDto.name,
+      role: UserRole.USER,
     });
 
     return this.usersRepository.save(user);
@@ -29,13 +32,32 @@ export class UsersService {
     return this.usersRepository.findOne({ where: { email } });
   }
 
-  async findById(id: number): Promise<User | null> {
-    return this.usersRepository.findOne({ where: { id } });
+  async findById(id: number): Promise<Omit<User, 'password'> | null> {
+    return this.usersRepository.findOne({
+      where: { id },
+      select: [
+        'id',
+        'email',
+        'username',
+        'role',
+        'name',
+        'createdAt',
+        'updatedAt',
+      ],
+    });
   }
 
   async findAll(): Promise<Omit<User, 'password'>[]> {
     const users = await this.usersRepository.find({
-      select: ['id', 'email', 'username', 'role', 'createdAt', 'updatedAt'],
+      select: [
+        'id',
+        'email',
+        'username',
+        'name',
+        'role',
+        'createdAt',
+        'updatedAt',
+      ],
     });
     return users;
   }
@@ -47,9 +69,34 @@ export class UsersService {
   async getAdminUsers(): Promise<Omit<User, 'password'>[]> {
     const users = await this.usersRepository.find({
       where: { role: UserRole.ADMIN },
-      select: ['id', 'email', 'username', 'role', 'createdAt', 'updatedAt'],
+      select: [
+        'id',
+        'email',
+        'username',
+        'name',
+        'role',
+        'createdAt',
+        'updatedAt',
+      ],
     });
     return users;
+  }
+
+  async updateUser(
+    userId: number,
+    dto: UpdateUserDto,
+  ): Promise<Omit<User, 'password'>> {
+    const user = await this.usersRepository.findOne({ where: { id: userId } });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    this.usersRepository.merge(user, dto);
+    const updatedUser = await this.usersRepository.save(user);
+
+    const { password, ...result } = updatedUser;
+    return result;
   }
 
   async validatePassword(

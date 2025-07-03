@@ -1,7 +1,17 @@
-import { Controller, Get, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { AdminGuard } from '../auth/guards/admin.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RequestUser } from '../auth/interfaces/auth.interface';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -12,6 +22,15 @@ export class UsersController {
   @Get('me')
   getProfile(@Request() req: { user: RequestUser }) {
     return this.usersService.findById(req.user.userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('me')
+  updateProfile(
+    @Request() req: { user: RequestUser },
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.usersService.updateUser(req.user.userId, updateUserDto);
   }
 
   @UseGuards(JwtAuthGuard, AdminGuard)
@@ -31,5 +50,15 @@ export class UsersController {
       adminUsers: adminUsers.length,
       regularUsers: totalUsers - adminUsers.length,
     };
+  }
+
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @Patch(':id')
+  async updateUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    // O serviço já lida com o erro de usuário não encontrado
+    return this.usersService.updateUser(id, updateUserDto);
   }
 }

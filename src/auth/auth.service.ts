@@ -39,6 +39,7 @@ export class AuthService {
         id: user.id,
         email: user.email,
         username: user.username,
+        name: user.name,
       },
     };
   }
@@ -64,7 +65,7 @@ export class AuthService {
     };
   }
 
-  async getProfile(userId: number): Promise<User | null> {
+  async getProfile(userId: number): Promise<Omit<User, 'password'> | null> {
     return this.usersService.findById(userId);
   }
 }
