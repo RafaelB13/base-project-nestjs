@@ -35,6 +35,12 @@ export class User {
   @Column({ nullable: true })
   name?: string; // Campo opcional, pode ser nulo ou vazio
 
+  @Column({ default: false })
+  isTwoFactorAuthenticationEnabled: boolean;
+
+  @Column({ type: 'varchar', nullable: true })
+  twoFactorAuthenticationSecret?: string | null;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

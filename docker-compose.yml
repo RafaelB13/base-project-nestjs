@@ -20,7 +20,13 @@ services:
       - DB_PASSWORD=devpass
       - DB_NAME=upload_s3_dev
       - DATABASE_URL=postgresql://devuser:devpass@postgres:5432/upload_s3_dev
-      - REDIS_URL=redis://redis:6379
+      - REDIS_URL=redis://redis://redis:6379
+      # Configuração para o MailHog
+      - EMAIL_HOST=mailhog
+      - EMAIL_PORT=1025
+      - EMAIL_USER=
+      - EMAIL_PASS=
+      - EMAIL_FROM="No Reply <noreply@yourapp.com>"
     volumes:
       # Volume para hot reload - mapeia código fonte
       - .:/app
@@ -32,6 +38,7 @@ services:
     depends_on:
       - redis
       - postgres
+      - mailhog # Adicionando dependência
 
   # PostgreSQL Database
   postgres:
@@ -79,6 +86,17 @@ services:
     restart: unless-stopped
     depends_on:
       - postgres
+
+  # MailHog para testes de e-mail
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: upload-s3-mailhog
+    ports:
+      - "1025:1025" # SMTP server
+      - "8025:8025" # Web UI
+    networks:
+      - app-network
+    restart: unless-stopped
 
 volumes:
   postgres_data:

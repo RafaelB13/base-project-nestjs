@@ -32,6 +32,10 @@ export class UsersService {
     return this.usersRepository.findOne({ where: { email } });
   }
 
+  async findUserWithSecretsByEmail(email: string): Promise<User | null> {
+    return this.usersRepository.findOne({ where: { email } });
+  }
+
   async findById(id: number): Promise<Omit<User, 'password'> | null> {
     return this.usersRepository.findOne({
       where: { id },
@@ -43,8 +47,13 @@ export class UsersService {
         'name',
         'createdAt',
         'updatedAt',
+        'isTwoFactorAuthenticationEnabled',
       ],
     });
+  }
+
+  async findUserWithSecretsById(id: number): Promise<User | null> {
+    return this.usersRepository.findOne({ where: { id } });
   }
 
   async findAll(): Promise<Omit<User, 'password'>[]> {
@@ -57,6 +66,7 @@ export class UsersService {
         'role',
         'createdAt',
         'updatedAt',
+        'isTwoFactorAuthenticationEnabled',
       ],
     });
     return users;
@@ -77,6 +87,7 @@ export class UsersService {
         'role',
         'createdAt',
         'updatedAt',
+        'isTwoFactorAuthenticationEnabled',
       ],
     });
     return users;
@@ -97,6 +108,21 @@ export class UsersService {
 
     const { password, ...result } = updatedUser;
     return result;
+  }
+
+  async setTwoFactorAuthenticationSecret(
+    userId: number,
+    secret: string | null,
+  ) {
+    return this.usersRepository.update(userId, {
+      twoFactorAuthenticationSecret: secret,
+    });
+  }
+
+  async setTwoFactorAuthenticationEnabled(userId: number, enabled: boolean) {
+    return this.usersRepository.update(userId, {
+      isTwoFactorAuthenticationEnabled: enabled,
+    });
   }
 
   async validatePassword(
