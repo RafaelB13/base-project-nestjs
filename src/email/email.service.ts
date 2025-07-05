@@ -7,15 +7,23 @@ export class EmailService {
   private transporter;
 
   constructor(private configService: ConfigService) {
-    this.transporter = nodemailer.createTransport({
+    const transportConfig: any = {
       host: this.configService.get<string>('EMAIL_HOST'),
       port: this.configService.get<number>('EMAIL_PORT'),
-      secure: false, // true for 465, false for other ports
-      auth: {
-        user: this.configService.get<string>('EMAIL_USER'),
-        pass: this.configService.get<string>('EMAIL_PASS'),
-      },
-    });
+      secure: this.configService.get<number>('EMAIL_PORT') === 465, // true for 465, false for other ports
+    };
+
+    const emailUser = this.configService.get<string>('EMAIL_USER');
+    const emailPass = this.configService.get<string>('EMAIL_PASS');
+
+    if (emailUser && emailPass) {
+      transportConfig.auth = {
+        user: emailUser,
+        pass: emailPass,
+      };
+    }
+
+    this.transporter = nodemailer.createTransport(transportConfig);
   }
 
   async sendMail(to: string, subject: string, text: string) {
