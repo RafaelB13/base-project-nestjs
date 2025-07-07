@@ -14,9 +14,29 @@ describe('AppController', () => {
     appController = app.get<AppController>(AppController);
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+  describe('healthCheck', () => {
+    it('should return info about the system', async () => {
+      const result = await appController.healthCheck();
+      expect(result).toEqual(
+        expect.objectContaining({
+          status: 'ok',
+          platform: expect.any(String),
+          arch: expect.any(String),
+          uptime: expect.any(Number),
+          cpu: expect.objectContaining({
+            model: expect.any(String),
+            cores: expect.any(Number),
+            speedGHz: expect.anything(),
+            usagePercent: expect.any(Number),
+          }),
+          memory: expect.objectContaining({
+            totalGB: expect.any(Number),
+            freeGB: expect.any(Number),
+            usedGB: expect.any(Number),
+            usagePercent: expect.any(Number),
+          }),
+        }),
+      );
     });
   });
 });

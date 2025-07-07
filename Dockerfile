@@ -4,14 +4,11 @@ FROM node:20-alpine AS builder
 # Definir diretório de trabalho
 WORKDIR /app
 
-# Copiar arquivos de dependências
-COPY package*.json ./
+# Copiar todos os arquivos do projeto
+COPY . .
 
 # Instalar dependências
 RUN npm ci --only=production && npm cache clean --force
-
-# Copiar código fonte
-COPY . .
 
 # Build da aplicação
 RUN npm run build

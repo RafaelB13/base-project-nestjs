@@ -41,6 +41,9 @@ export class User {
   @Column({ type: 'varchar', nullable: true })
   twoFactorAuthenticationSecret?: string | null;
 
+  @Column({ type: 'varchar', nullable: true })
+  twoFactorAuthenticationToken?: string | null;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

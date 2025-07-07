@@ -14,7 +14,6 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    // Usar salt rounds mais alto para maior segurança
     const hashedPassword = await bcrypt.hash(createUserDto.password, 12);
 
     const user = this.usersRepository.create({
@@ -122,6 +121,20 @@ export class UsersService {
   async setTwoFactorAuthenticationEnabled(userId: number, enabled: boolean) {
     return this.usersRepository.update(userId, {
       isTwoFactorAuthenticationEnabled: enabled,
+    });
+  }
+
+  async setTwoFactorAuthenticationToken(userId: number, token: string | null) {
+    return this.usersRepository.update(userId, {
+      twoFactorAuthenticationToken: token,
+    });
+  }
+
+  async findByTwoFactorAuthenticationToken(
+    token: string,
+  ): Promise<User | null> {
+    return this.usersRepository.findOne({
+      where: { twoFactorAuthenticationToken: token },
     });
   }
 

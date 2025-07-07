@@ -5,14 +5,17 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Query,
   Request,
+  Res,
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { Response } from 'express';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { User } from '../users/entities/user.entity';
 import { AuthService } from './auth.service';
-import { TwoFactorAuthenticationCodeDto } from './dto/two-factor-auth.dto';
 import { TwoFactorLoginDto } from './dto/two-factor-login.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
@@ -24,7 +27,10 @@ import {
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private configService: ConfigService,
+  ) {}
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
@@ -72,22 +78,29 @@ export class AuthController {
     return req.user;
   }
 
-  @Post('2fa/generate')
+  @Post('2fa/enable/request')
   @UseGuards(JwtAuthGuard)
-  async generateTwoFactorAuthentication(@Request() req: { user: RequestUser }) {
-    return this.authService.sendTwoFactorAuthenticationCode(req.user.userId);
+  async requestEnableTwoFactorAuthentication(
+    @Request() req: { user: RequestUser },
+  ) {
+    await this.authService.sendTwoFactorAuthenticationEnableEmail(
+      req.user.userId,
+    );
+    return {
+      message:
+        'A confirmation email has been sent to enable two-factor authentication.',
+    };
   }
 
-  @Post('2fa/turn-on')
-  @UseGuards(JwtAuthGuard)
-  async turnOnTwoFactorAuthentication(
-    @Request() req: { user: RequestUser },
-    @Body() { code }: TwoFactorAuthenticationCodeDto,
+  @Get('2fa/enable')
+  async enableTwoFactorAuthentication(
+    @Query('token') token: string,
+    @Res() res: Response,
   ) {
-    return this.authService.turnOnTwoFactorAuthentication(
-      req.user.userId,
-      code,
-    );
+    await this.authService.enableTwoFactorAuthentication(token);
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL');
+
+    res.redirect(frontendUrl!);
   }
 
   @Post('2fa/turn-off')

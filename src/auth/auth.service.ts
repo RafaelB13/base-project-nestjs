@@ -1,5 +1,10 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { randomBytes } from 'crypto';
 import { EmailService } from '../email/email.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { User } from '../users/entities/user.entity';
@@ -94,32 +99,49 @@ export class AuthService {
     return this.usersService.findById(userId);
   }
 
-  async generateTwoFactorAuthenticationSecret(userId: number) {
-    const secret = Math.floor(100000 + Math.random() * 900000).toString();
-    await this.usersService.setTwoFactorAuthenticationSecret(userId, secret);
-    return secret;
-  }
-
   async sendTwoFactorAuthenticationCode(userId: number) {
     const user = await this.usersService.findById(userId);
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
-    const code = await this.generateTwoFactorAuthenticationSecret(user.id);
-    await this.emailService.sendMail(
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    await this.usersService.setTwoFactorAuthenticationSecret(user.id, code);
+    await this.emailService.sendTwoFactorAuthEmail(
       user.email,
-      'Seu código de autenticação de dois fatores',
-      `Seu código de autenticação é: ${code}`,
+      user.name || 'User',
+      code,
     );
   }
 
-  async turnOnTwoFactorAuthentication(userId: number, code: string) {
-    const user = await this.usersService.findUserWithSecretsById(userId);
-    if (!user || user.twoFactorAuthenticationSecret !== code) {
-      throw new UnauthorizedException('Código de autenticação inválido');
+  async sendTwoFactorAuthenticationEnableEmail(userId: number) {
+    const user = await this.usersService.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
-    await this.usersService.setTwoFactorAuthenticationEnabled(userId, true);
-    await this.usersService.setTwoFactorAuthenticationSecret(userId, null);
+
+    const token = randomBytes(32).toString('hex');
+    await this.usersService.setTwoFactorAuthenticationToken(user.id, token);
+
+    await this.emailService.sendTwoFactorEnableEmail(
+      user.email,
+      user.name || 'User',
+      token,
+    );
+  }
+
+  async enableTwoFactorAuthentication(token: string): Promise<LoginResponse> {
+    const user =
+      await this.usersService.findByTwoFactorAuthenticationToken(token);
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid token');
+    }
+
+    await this.usersService.setTwoFactorAuthenticationEnabled(user.id, true);
+    await this.usersService.setTwoFactorAuthenticationToken(user.id, null);
+
+    const { password, ...userResult } = user;
+    return this.login(userResult);
   }
 
   async turnOffTwoFactorAuthentication(userId: number) {

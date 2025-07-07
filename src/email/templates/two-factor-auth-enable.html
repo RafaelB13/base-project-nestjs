@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ative a autenticação em duas etapas</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background: linear-gradient(135deg, #e0e7ff 0%, #f6f8fa 100%);
+            font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            background: #fff;
+            max-width: 420px;
+            margin: 48px auto;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(56,103,214,0.10), 0 1.5px 6px rgba(0,0,0,0.04);
+            padding: 40px 36px 32px 36px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .icon {
+            background: linear-gradient(135deg, #3867d6 60%, #5f8fff 100%);
+            border-radius: 50%;
+            width: 64px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(56,103,214,0.10);
+        }
+        .icon svg {
+            width: 36px;
+            height: 36px;
+            color: #fff;
+        }
+        h1 {
+            color: #22223b;
+            font-size: 1.45rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        p {
+            color: #4a4e69;
+            font-size: 1.05rem;
+            margin-bottom: 18px;
+            text-align: center;
+            line-height: 1.6;
+        }
+        .btn {
+            display: inline-block;
+            padding: 14px 36px;
+            background: linear-gradient(90deg, #3867d6 60%, #5f8fff 100%);
+            color: #fff !important;
+            border-radius: 7px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.08rem;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(56,103,214,0.10);
+            transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+            margin-top: 10px;
+        }
+        .btn:hover {
+            background: linear-gradient(90deg, #274b8e 60%, #3867d6 100%);
+            box-shadow: 0 4px 16px rgba(56,103,214,0.13);
+            transform: translateY(-2px) scale(1.03);
+        }
+        .footer {
+            margin-top: 36px;
+            font-size: 0.93rem;
+            color: #a0a0a0;
+            text-align: center;
+        }
+        @media (max-width: 500px) {
+            .container {
+                padding: 24px 8px 18px 8px;
+            }
+            h1 {
+                font-size: 1.1rem;
+            }
+            .btn {
+                padding: 12px 18px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c1.104 0 2-.896 2-2s-.896-2-2-2-2 .896-2 2 .896 2 2 2zm0 0v2m0 4h.01M17 16v-1a5 5 0 00-10 0v1m10 0a2 2 0 01-2 2H9a2 2 0 01-2-2m10 0V9a7 7 0 10-14 0v7a2 2 0 002 2h10a2 2 0 002-2z"/></svg>
+        </div>
+        <h1>Ative a autenticação em duas etapas</h1>
+        <p>Olá <b>{{name}}</b>,</p>
+        <p>Para proteger ainda mais sua conta, ative a autenticação em duas etapas clicando no botão abaixo:</p>
+        <a href="{{url}}" class="btn">Ativar 2FA</a>
+        <div class="footer">
+            Se você não solicitou esta alteração, ignore este e-mail.
+        </div>
+    </div>
+</body>
+</html>

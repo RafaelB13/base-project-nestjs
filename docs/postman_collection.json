@@ -144,52 +144,45 @@
 					"response": []
 				},
 				{
-					"name": "Generate 2FA Code",
+					"name": "Request 2FA Enable",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/auth/2fa/generate",
+							"raw": "{{baseUrl}}/auth/2fa/enable/request",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"auth",
 								"2fa",
-								"generate"
+								"enable",
+								"request"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Turn On 2FA",
+					"name": "Enable 2FA",
 					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"code\": \"123456\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
+						"method": "GET",
+						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/auth/2fa/turn-on",
+							"raw": "{{baseUrl}}/auth/2fa/enable?token=YOUR_TOKEN",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"auth",
 								"2fa",
-								"turn-on"
+								"enable"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "YOUR_TOKEN"
+								}
 							]
 						}
 					},
