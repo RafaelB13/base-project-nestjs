@@ -52,13 +52,12 @@ export class UsersController {
     };
   }
 
-  @UseGuards(JwtAuthGuard, AdminGuard)
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   async updateUser(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    // O serviço já lida com o erro de usuário não encontrado
     return this.usersService.updateUser(id, updateUserDto);
   }
 }
