@@ -95,11 +95,11 @@ export class AuthService {
     };
   }
 
-  async getProfile(userId: number): Promise<Omit<User, 'password'> | null> {
+  async getProfile(userId: string): Promise<Omit<User, 'password'> | null> {
     return this.usersService.findById(userId);
   }
 
-  async sendTwoFactorAuthenticationCode(userId: number) {
+  async sendTwoFactorAuthenticationCode(userId: string) {
     const user = await this.usersService.findById(userId);
     if (!user) {
       throw new UnauthorizedException('User not found');
@@ -113,7 +113,7 @@ export class AuthService {
     );
   }
 
-  async sendTwoFactorAuthenticationEnableEmail(userId: number) {
+  async sendTwoFactorAuthenticationEnableEmail(userId: string) {
     const user = await this.usersService.findById(userId);
     if (!user) {
       throw new NotFoundException('User not found');
@@ -144,7 +144,7 @@ export class AuthService {
     return this.login(userResult);
   }
 
-  async turnOffTwoFactorAuthentication(userId: number) {
+  async turnOffTwoFactorAuthentication(userId: string) {
     await this.usersService.setTwoFactorAuthenticationEnabled(userId, false);
   }
 }

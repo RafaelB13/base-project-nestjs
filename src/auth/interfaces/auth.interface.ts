@@ -1,12 +1,12 @@
 export interface JwtPayload {
   email: string;
-  sub: number;
+  sub: string;
 }
 
 export interface LoginResponse {
   access_token: string;
   user: {
-    id: number;
+    id: string;
     email: string;
     username: string;
     name?: string;
@@ -17,7 +17,7 @@ export interface LoginResponse {
 export interface RegisterResponse {
   access_token: string;
   user: {
-    id: number;
+    id: string;
     email: string;
     username: string;
     createdAt: Date;
@@ -26,6 +26,6 @@ export interface RegisterResponse {
 }
 
 export interface RequestUser {
-  userId: number;
+  userId: string;
   email: string;
 }

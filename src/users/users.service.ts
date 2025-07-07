@@ -35,7 +35,7 @@ export class UsersService {
     return this.usersRepository.findOne({ where: { email } });
   }
 
-  async findById(id: number): Promise<Omit<User, 'password'> | null> {
+  async findById(id: string): Promise<Omit<User, 'password'> | null> {
     return this.usersRepository.findOne({
       where: { id },
       select: [
@@ -51,7 +51,7 @@ export class UsersService {
     });
   }
 
-  async findUserWithSecretsById(id: number): Promise<User | null> {
+  async findUserWithSecretsById(id: string): Promise<User | null> {
     return this.usersRepository.findOne({ where: { id } });
   }
 
@@ -93,7 +93,7 @@ export class UsersService {
   }
 
   async updateUser(
-    userId: number,
+    userId: string,
     dto: UpdateUserDto,
   ): Promise<Omit<User, 'password'>> {
     const user = await this.usersRepository.findOne({ where: { id: userId } });
@@ -110,7 +110,7 @@ export class UsersService {
   }
 
   async setTwoFactorAuthenticationSecret(
-    userId: number,
+    userId: string,
     secret: string | null,
   ) {
     return this.usersRepository.update(userId, {
@@ -118,13 +118,13 @@ export class UsersService {
     });
   }
 
-  async setTwoFactorAuthenticationEnabled(userId: number, enabled: boolean) {
+  async setTwoFactorAuthenticationEnabled(userId: string, enabled: boolean) {
     return this.usersRepository.update(userId, {
       isTwoFactorAuthenticationEnabled: enabled,
     });
   }
 
-  async setTwoFactorAuthenticationToken(userId: number, token: string | null) {
+  async setTwoFactorAuthenticationToken(userId: string, token: string | null) {
     return this.usersRepository.update(userId, {
       twoFactorAuthenticationToken: token,
     });
