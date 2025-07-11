@@ -1,8 +1,8 @@
 {
-  "name": "upload-to-s3",
+  "name": "nestjs-backend-template",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "A NestJS backend template with TypeORM, JWT authentication, and Docker support",
+  "author": "Rafael Borges",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {

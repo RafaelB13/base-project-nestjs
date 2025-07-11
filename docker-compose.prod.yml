@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # Aplicação NestJS para produção
+  # NestJS App for production
   app:
     build:
       context: .
@@ -22,7 +22,7 @@ services:
       - redis
       - postgres
 
-  # PostgreSQL Database para produção
+  # PostgreSQL Database for production
   postgres:
     image: postgres:15-alpine
     container_name: upload-s3-postgres-prod
@@ -36,7 +36,7 @@ services:
       - app-network
     restart: unless-stopped
 
-  # Redis para cache e sessões
+  # Redis for caching in production
   redis:
     image: redis:7-alpine
     container_name: upload-s3-redis-prod

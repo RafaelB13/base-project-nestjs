@@ -1,98 +1,130 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# NestJS Template
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![NestJS](https://img.shields.io/badge/Framework-NestJS-red.svg)](https://nestjs.com/)
+[![TypeScript](https://img.shields.io/badge/Language-TypeScript-blue.svg)](https://www.typescriptlang.org/)
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+A robust and feature-rich starter template for building scalable server-side applications with NestJS. This template provides a solid foundation with a complete authentication system, database integration, file uploads, and a ready-to-use Docker environment.
 
-## Description
+## 🚀 Core Features
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+-   **Authentication**: Secure, token-based authentication using JWT and Passport.js.
+-   **Two-Factor Authentication (2FA)**: Enhance security with time-based one-time passwords (TOTP) via authenticator apps.
+-   **Authorization**: Role-based access control (RBAC) using Guards.
+-   **Database Integration**: Pre-configured with TypeORM for PostgreSQL.
+-   **Database Migrations**: Manage your database schema with TypeORM migrations.
+-   **File Uploads**: Ready-to-use module for uploading files to cloud storage (e.g., AWS S3).
+-   **Email Service**: Integrated email sending for notifications, 2FA setup, and more.
+-   **Dockerized Environment**: Includes a multi-container Docker setup with hot-reloading for seamless development.
+-   **Configuration Management**: Centralized and environment-aware configuration.
+-   **Data Validation**: Automatic request payload validation using `class-validator` and `class-transformer`.
+-   **Comprehensive Testing**: Setup for unit and end-to-end (E2E) tests with Jest.
 
-## Project setup
+## 🛠️ Technologies Used
 
-```bash
-$ yarn install
-```
+-   **Framework**: NestJS
+-   **Language**: TypeScript
+-   **Database**: PostgreSQL
+-   **ORM**: TypeORM
+-   **Authentication**: Passport.js (JWT, Local strategies)
+-   **Containerization**: Docker, Docker Compose
+-   **Caching**: Redis
+-   **Validation**: `class-validator`, `class-transformer`
+-   **Testing**: Jest, Supertest
 
-## Compile and run the project
+## Prerequisites
 
-```bash
-# development
-$ yarn run start
+-   Node.js (v18 or higher)
+-   Yarn or npm
+-   Docker and Docker Compose
 
-# watch mode
-$ yarn run start:dev
+## ⚙️ Getting Started
 
-# production mode
-$ yarn run start:prod
-```
-
-## Run tests
+### 1. Clone the Repository
 
 ```bash
-# unit tests
-$ yarn run test
-
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
+git clone <repository-url>
+cd <repository-name>
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### 2. Install Dependencies
 
 ```bash
-$ yarn install -g @nestjs/mau
-$ mau deploy
+yarn install
+# or
+npm install
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 3. Configure Environment Variables
 
-## Resources
+Copy the example environment file and update it with your credentials.
 
-Check out a few resources that may come in handy when working with NestJS:
+```bash
+cp .env.example .env
+```
+> **Note**: You will need to fill in your database credentials, JWT secrets, email server (SMTP) details, and AWS S3 credentials.
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## 🏃 How to Run
 
-## Support
+### Local Development
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+1.  **Run Database Migrations**:
+    ```bash
+    yarn migration:run
+    ```
+2.  **Start the Application**:
+    ```bash
+    yarn start:dev
+    ```
+The API will be available at `http://localhost:3000`.
 
-## Stay in touch
+### Docker Development
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+The Docker environment includes the NestJS app, PostgreSQL, Redis, and PgAdmin.
 
-## License
+1.  **Start the Docker containers**:
+    ```bash
+    npm run docker:dev
+    ```
+-   **API**: `http://localhost:3000`
+-   **PgAdmin**: `http://localhost:8080`
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+For more details on the Docker setup, see the `DOCKER_README.md`.
+
+## 📁 Project Structure
+
+```
+/
+├── src/
+│   ├── auth/             # Authentication, 2FA, Guards, Strategies
+│   ├── users/            # User management (CRUD)
+│   ├── database/         # TypeORM config, migrations, and seeding
+│   ├── email/            # Email service module
+│   ├── core/             # Core modules, interceptors, filters
+│   └── main.ts           # Application entry point
+├── test/                 # E2E and unit tests
+├── scripts/              # Utility and setup scripts
+├── docs/                 # API documentation (e.g., Postman)
+├── .env.example          # Environment variables template
+├── docker-compose.yml    # Docker configuration for development
+└── Dockerfile            # Docker build instructions
+```
+
+## ✅ Testing
+
+-   **Run all unit tests**:
+    ```bash
+    yarn test
+    ```
+-   **Run end-to-end (E2E) tests**:
+    ```bash
+    yarn test:e2e
+    ```
+-   **Generate test coverage report**:
+    ```bash
+    yarn test:cov
+    ```
+
+## 📄 License
+
+This project is distributed under the MIT License. See `LICENSE` for more information.

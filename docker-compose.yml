@@ -1,5 +1,5 @@
 services:
-  # Aplicação NestJS para desenvolvimento
+  # NestJS App for development
   app:
     build:
       context: .
@@ -9,7 +9,7 @@ services:
       - .env
     ports:
       - "3000:3000"
-      - "9229:9229"  # Porta para debugging
+      - "9229:9229"  # Port for Node.js debugging
     environment:
       - NODE_ENV=development
       - JWT_SECRET=meu_jwt_secret_muito_seguro_para_desenvolvimento
@@ -22,16 +22,16 @@ services:
       - DB_NAME=upload_s3_dev
       - DATABASE_URL=postgresql://devuser:devpass@postgres:5432/upload_s3_dev
       - REDIS_URL=redis://redis://redis:6379
-      # Configuração para o MailHog
+      # MailHog configuration for development
       - EMAIL_HOST=mailhog
       - EMAIL_PORT=1025
       - EMAIL_USER=
       - EMAIL_PASS=
       - EMAIL_FROM="No Reply <noreply@yourapp.com>"
     volumes:
-      # Volume para hot reload - mapeia código fonte
+      # Volume for source code
       - .:/app
-      - /app/node_modules  # Volume anônimo para node_modules
+      - /app/node_modules  # Anonymous volume to avoid conflicts with host node_modules
     networks:
       - app-network
     command: npm run start:dev
@@ -39,7 +39,7 @@ services:
     depends_on:
       - redis
       - postgres
-      - mailhog # Adicionando dependência
+      - mailhog
 
   # PostgreSQL Database
   postgres:
@@ -57,8 +57,7 @@ services:
     networks:
       - app-network
     restart: unless-stopped
-
-  # Redis para cache e sessões
+  # Redis for caching
   redis:
     image: redis:7-alpine
     container_name: upload-s3-redis
@@ -71,7 +70,7 @@ services:
       - app-network
     restart: unless-stopped
 
-  # PgAdmin para gerenciamento do PostgreSQL
+  # PgAdmin PostgreSQL
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: upload-s3-pgadmin
@@ -88,7 +87,7 @@ services:
     depends_on:
       - postgres
 
-  # MailHog para testes de e-mail
+  # MailHog for email testing
   mailhog:
     image: mailhog/mailhog:latest
     container_name: upload-s3-mailhog

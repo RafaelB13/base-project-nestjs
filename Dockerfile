@@ -1,37 +1,37 @@
-# Dockerfile para produção
+# Dockerfile for production
 FROM node:20-alpine AS builder
 
-# Definir diretório de trabalho
+# Set working directory
 WORKDIR /app
 
-# Copiar todos os arquivos do projeto
+# Copy all project files
 COPY . .
 
-# Instalar dependências
+# Install dependencies
 RUN npm ci --only=production && npm cache clean --force
 
-# Build da aplicação
+# Build the application
 RUN npm run build
 
-# Estágio de produção
+# Production stage
 FROM node:20-alpine AS production
 
 WORKDIR /app
 
-# Copiar node_modules e dist do estágio builder
+# Copy node_modules and dist from builder stage
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package*.json ./
 
-# Criar usuário não-root para segurança
+# Create non-root user for security
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nestjs -u 1001
 
-# Mudar para usuário não-root
+# Switch to non-root user
 USER nestjs
 
-# Expor a porta
+# Expose port
 EXPOSE 3000
 
-# Comando para produção
+# Production command
 CMD ["node", "dist/main"]

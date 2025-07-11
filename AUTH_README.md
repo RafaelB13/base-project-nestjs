@@ -1,246 +1,84 @@
-# Sistema de Autenticação JWT - NestJS
+# Authentication and Authorization
 
-Este projeto implementa um sistema completo de autenticação JWT usando NestJS com suporte a Docker para desenvolvimento.
+This document details the implementation of the authentication and authorization system, including JWT, guards, strategies, and Two-Factor Authentication (2FA).
 
-## Funcionalidades
-
-- ✅ Registro de usuários
-- ✅ Login com JWT
-- ✅ Proteção de rotas
-- ✅ Validação de dados
-- ✅ Hash de senhas com bcrypt
-- ✅ Guards de autenticação
-- ✅ Estratégias Passport (Local e JWT)
-- ✅ Docker para desenvolvimento com hot reload
-- ✅ PostgreSQL e Redis configurados
-- ✅ PgAdmin para administração do banco
-
-## Configuração e Execução
-
-### Usando Docker (Recomendado)
-
-1. **Clone o repositório e entre na pasta:**
-```bash
-git clone <seu-repo>
-cd upload-to-s3
-```
-
-2. **Inicie o ambiente de desenvolvimento:**
-```bash
-npm run docker:dev
-```
-
-Ou use o script diretamente:
-```bash
-./scripts/dev-start.sh
-```
-
-3. **Acesse a aplicação:**
-- API: http://localhost:3000
-- PgAdmin: http://localhost:8080 (admin@example.com / admin123)
-
-### Comandos Docker Úteis
-
-```bash
-# Iniciar ambiente de desenvolvimento
-npm run docker:dev
-
-# Parar ambiente
-npm run docker:stop
-
-# Ver logs da aplicação
-npm run docker:logs
-
-# Reconstruir containers
-npm run docker:build
-
-# Limpar containers e volumes
-npm run docker:clean
-
-# Produção
-npm run docker:prod
-```
-
-### Configuração Manual (Sem Docker)
-
-1. **Copie o arquivo de exemplo de variáveis de ambiente:**
-```bash
-cp .env.example .env
-```
-
-2. **Configure as variáveis no arquivo .env:**
-```
-JWT_SECRET=seu_jwt_secret_muito_seguro_aqui
-NODE_ENV=development
-PORT=3000
-```
-
-3. **Instale as dependências:**
-```bash
-npm install
-```
-
-4. **Execute a aplicação:**
-```bash
-npm run start:dev
-```
-
-## Endpoints da API
-
-### Autenticação
-
-#### POST /auth/register
-Registra um novo usuário.
-
-**Body:**
-```json
-{
-  "email": "usuario@exemplo.com",
-  "username": "usuario123",
-  "password": "senha123"
-}
-```
-
-**Resposta:**
-```json
-{
-  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "user": {
-    "id": 1,
-    "email": "usuario@exemplo.com",
-    "username": "usuario123",
-    "createdAt": "2025-06-30T...",
-    "updatedAt": "2025-06-30T..."
-  }
-}
-```
-
-#### POST /auth/login
-Faz login do usuário.
-
-**Body:**
-```json
-{
-  "email": "usuario@exemplo.com",
-  "password": "senha123"
-}
-```
-
-**Resposta:**
-```json
-{
-  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "user": {
-    "id": 1,
-    "email": "usuario@exemplo.com",
-    "username": "usuario123"
-  }
-}
-```
-
-#### GET /auth/profile
-Obtém o perfil do usuário autenticado (requer token JWT).
-
-**Headers:**
-```
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-```
-
-### Usuários
-
-#### GET /users/me
-Obtém os dados do usuário autenticado (requer token JWT).
-
-#### GET /users
-Lista todos os usuários (requer token JWT).
-
-## Como usar
-
-1. **Registrar um usuário:**
-```bash
-curl -X POST http://localhost:3000/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "teste@exemplo.com",
-    "username": "teste",
-    "password": "123456"
-  }'
-```
-
-2. **Fazer login:**
-```bash
-curl -X POST http://localhost:3000/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "teste@exemplo.com",
-    "password": "123456"
-  }'
-```
-
-3. **Acessar rota protegida:**
-```bash
-curl -X GET http://localhost:3000/auth/profile \
-  -H "Authorization: Bearer SEU_TOKEN_AQUI"
-```
-
-## Estrutura do Projeto
+## Authentication Flow
 
 ```
-src/
-├── auth/
-│   ├── dto/
-│   │   └── login.dto.ts
-│   ├── guards/
-│   │   ├── jwt-auth.guard.ts
-│   │   └── local-auth.guard.ts
-│   ├── strategies/
-│   │   ├── jwt.strategy.ts
-│   │   └── local.strategy.ts
-│   ├── auth.controller.ts
-│   ├── auth.module.ts
-│   └── auth.service.ts
-├── users/
-│   ├── dto/
-│   │   └── create-user.dto.ts
-│   ├── entities/
-│   │   └── user.entity.ts
-│   ├── users.controller.ts
-│   ├── users.module.ts
-│   └── users.service.ts
-├── app.controller.ts
-├── app.module.ts
-├── app.service.ts
-└── main.ts
+                               +------------------+
+                               |   User Client    |
+                               +------------------+
+                                        |
+                                        | 1. Login with credentials
+                                        | (email/password)
+                                        v
++------------------+           +------------------+          +------------------+
+|   Local Guard    | <-------- |   Auth Service   | -------> |  Local Strategy  |
+| (Authenticates)  |           |  (Generates JWT) |          | (Validates User) |
++------------------+           +------------------+          +------------------+
+         ^                              |
+         |                              | 2. Returns JWT Token
+         |                              |
+         |                              v
+         |                     +------------------+
+         |                     |   User Client    |
+         |                     +------------------+
+         |                              |
+         |                              | 3. Access protected route
+         |                              |    with JWT in Header
+         |                              v
++------------------+           +------------------+          +------------------+
+|    JWT Guard     | <-------- |   Auth Service   | -------> |   JWT Strategy   |
+|  (Authorizes)    |           | (Validates Token)|          |  (Extracts User) |
++------------------+           +------------------+          +------------------+
 ```
 
-## Executar o projeto
+## Core Components
 
-```bash
-# Instalar dependências
-npm install
+- **`AuthModule`**: Module that encapsulates all authentication logic.
+- **`AuthService`**: Contains methods for validating users, generating JWT tokens, and managing 2FA.
+- **`AuthController`**: Exposes endpoints for login, status, and 2FA management.
+- **`LocalStrategy`**: Validates user credentials (email and password).
+- **`JwtStrategy`**: Validates the JWT token on each protected request.
 
-# Executar em modo de desenvolvimento
-npm run start:dev
+## Guards
 
-# Executar em modo de produção
-npm run start:prod
-```
+- **`LocalAuthGuard`**: Activates the `LocalStrategy` on the login endpoint.
+- **`JwtAuthGuard`**: Protects routes that require a valid JWT token.
+- **`AdminGuard`**: Ensures that only users with the `admin` role can access the route.
 
-## Segurança
+## API Endpoints
 
-- As senhas são hasheadas usando bcrypt
-- Os tokens JWT têm expiração de 24 horas
-- Validação de dados de entrada
-- Guards para proteção de rotas
+- `POST /auth/login`: User authentication. Returns an `access_token`.
+- `GET /auth/status`: Checks authentication status. Requires JWT.
+- `POST /auth/2fa/generate`: Generates a QR code to set up 2FA. Requires JWT.
+- `POST /auth/2fa/enable`: Enables 2FA using a code from the authenticator app. Requires JWT.
+- `POST /auth/2fa/disable`: Disables 2FA. Requires JWT.
+- `POST /auth/2fa/login`: Performs login with a 2FA code. Used after initial login if 2FA is enabled.
 
-## Próximos passos
+## Two-Factor Authentication (2FA)
 
-Para melhorar ainda mais o sistema, você pode adicionar:
+### Activation Flow
+1. User requests QR code generation (`/auth/2fa/generate`).
+2. The API generates a secret and associates it with the user.
+3. The API returns an `otpauth://` URL which is converted to a QR code on the frontend.
+4. The user scans the QR code with an app (e.g., Google Authenticator).
+5. The user sends the code generated by the app to (`/auth/2fa/enable`).
+6. The API validates the code and enables 2FA for the user.
 
-- Refresh tokens
-- Rate limiting
-- Logs de auditoria
-- Verificação de email
-- Recuperação de senha
-- Roles e permissões
-- Integração com banco de dados (PostgreSQL, MongoDB, etc.)
+### Login Flow with 2FA
+1. The user logs in with email and password (`/auth/login`).
+2. If 2FA is enabled, the API returns a special status indicating the need for the second factor.
+3. The user sends the 2FA code to (`/auth/2fa/login`).
+4. The API validates the code and returns the final `access_token`.
+
+## Security
+
+- Passwords are stored hashed using `bcrypt`.
+- JWT and 2FA secrets are stored in environment variables.
+- The `access_token` has a short expiration time.
+
+## How to Test
+
+- Use the Postman collection (`/docs/postman_collection.json`) to test the flows.
+- Create a user, log in, enable 2FA, and try to access protected routes.
