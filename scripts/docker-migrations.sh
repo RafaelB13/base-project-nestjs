@@ -1,33 +1,33 @@
 #!/bin/bash
 
-# Script para executar migrations em ambiente Docker
-# Este script deve ser executado antes de iniciar a aplicação em produção
+# Script to execute migrations in Docker environment
+# This script must be executed before starting the application in production
 
 set -e
 
-echo "🚀 Iniciando processo de migrations..."
+echo "🚀 Starting migration process..."
 
 # Esperar o banco estar disponível
-echo "⏳ Aguardando banco de dados estar disponível..."
+echo "⏳ Waiting for database to be available..."
 while ! nc -z $DB_HOST $DB_PORT; do
-  echo "Aguardando PostgreSQL em $DB_HOST:$DB_PORT..."
+  echo "Waiting for PostgreSQL at $DB_HOST:$DB_PORT..."
   sleep 2
 done
 
-echo "✅ Banco de dados disponível!"
+echo "✅ Database available!"
 
 # Executar migrations
-echo "📦 Executando migrations..."
+echo "📦 Executing migrations..."
 npm run migration:run
 
-echo "✅ Migrations executadas com sucesso!"
+echo "✅ Migrations executed successfully!"
 
 # Verificar se há migrations pendentes
-echo "🔍 Verificando migrations pendentes..."
+echo "🔍 Checking for pending migrations..."
 if npm run migration:show | grep -q "No migrations"; then
-  echo "✅ Todas as migrations estão em dia!"
+  echo "✅ All migrations are up to date!"
 else
-  echo "⚠️ Ainda há migrations pendentes. Verifique manualmente."
+  echo "⚠️ There are still pending migrations. Please check manually."
 fi
 
-echo "🎉 Processo de migrations concluído!"
+echo "🎉 Migration process completed!"

@@ -1,42 +1,42 @@
 #!/bin/bash
 
-# Script para iniciar ambiente de desenvolvimento
+# Script to start development environment
 
-echo "🚀 Iniciando ambiente de desenvolvimento..."
+echo "🚀 Starting development environment..."
 
-# Verificar se Docker está rodando
+# Check if Docker is running
 if ! docker info &> /dev/null; then
-    echo "❌ Docker não está rodando. Por favor, inicie o Docker Desktop."
+    echo "❌ Docker is not running. Please start Docker Desktop."
     exit 1
 fi
 
-# Parar containers existentes
-echo "🛑 Parando containers existentes..."
+# Stop existing containers
+echo "🛑 Stopping existing containers..."
 docker-compose down
 
-# Construir e iniciar containers
-echo "🔨 Construindo e iniciando containers..."
+# Build and start containers
+echo "🔨 Building and starting containers..."
 docker-compose up --build -d
 
-# Aguardar containers ficarem prontos
-echo "⏳ Aguardando containers ficarem prontos..."
+# Wait for containers to be ready
+echo "⏳ Waiting for containers to be ready..."
 sleep 10
 
-# Verificar status dos containers
-echo "📊 Status dos containers:"
+# Check container status
+echo "📊 Container status:"
 docker-compose ps
 
-# Mostrar logs da aplicação
-echo "📝 Logs da aplicação:"
+# Show application logs
+echo "📝 Application logs:"
 docker-compose logs app
 
-echo "✅ Ambiente de desenvolvimento iniciado!"
-echo "🌐 Aplicação disponível em: http://localhost:3000"
-echo "🗄️  PgAdmin disponível em: http://localhost:8080"
+echo "✅ Development environment started!"
+echo "🌐 Application available at: http://localhost:3000"
+echo "🗄️  PgAdmin available at: http://localhost:8080"
 echo "   - Email: admin@example.com"
-echo "   - Senha: admin123"
+echo "   - Password: admin123"
 echo ""
-echo "📋 Comandos úteis:"
-echo "   - Ver logs: docker-compose logs -f app"
-echo "   - Parar ambiente: docker-compose down"
-echo "   - Resetar volumes: docker-compose down -v"
+echo "📋 Useful commands:"
+echo "   - View logs: docker-compose logs -f app"
+echo "   - Stop environment: docker-compose down"
+echo "   - Reset volumes: docker-compose down -v"

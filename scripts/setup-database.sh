@@ -1,28 +1,28 @@
 #!/bin/bash
 # filepath: /Users/rafaelborges/Dev/Node/upload-to-s3/scripts/setup-database.sh
 
-echo "🗄️  Configurando banco de dados..."
+echo "🗄️  Setting up database..."
 
 # Aguardar o PostgreSQL estar pronto
-echo "⏳ Aguardando PostgreSQL ficar pronto..."
+echo "⏳ Waiting for PostgreSQL to be ready..."
 until docker-compose exec postgres pg_isready -U devuser -d upload_s3_dev; do
   sleep 2
 done
 
-echo "🔧 Executando script de inicialização..."
+echo "🔧 Executing initialization script..."
 docker-compose exec postgres psql -U devuser -d upload_s3_dev -f /docker-entrypoint-initdb.d/init.sql
 
-echo "✅ Verificando se tudo foi criado corretamente..."
-echo "📊 Extensões instaladas:"
+echo "✅ Verifying everything was created correctly..."
+echo "📊 Installed extensions:"
 docker-compose exec postgres psql -U devuser -d upload_s3_dev -c "\dx"
 
 echo ""
-echo "📋 Tabelas criadas:"
+echo "📋 Tables created:"
 docker-compose exec postgres psql -U devuser -d upload_s3_dev -c "\dt"
 
 echo ""
-echo "🏗️  Estrutura da tabela users:"
+echo "🏗️  Users table structure:"
 docker-compose exec postgres psql -U devuser -d upload_s3_dev -c "\d users"
 
 echo ""
-echo "✅ Banco de dados configurado com sucesso!"
+echo "✅ Database configured successfully!"

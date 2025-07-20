@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# Script para parar ambiente de desenvolvimento
+# Script to stop development environment
 
-echo "🛑 Parando ambiente de desenvolvimento..."
+echo "🛑 Stopping development environment..."
 
-# Parar e remover containers
+# Stop and remove containers
 docker-compose down
 
-echo "✅ Ambiente parado!"
+echo "✅ Environment stopped!"
 echo ""
-echo "💡 Para remover dados persistentes, use: docker-compose down -v"
+echo "💡 To remove persistent data, use: docker-compose down -v"

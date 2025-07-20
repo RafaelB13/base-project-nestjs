@@ -47,51 +47,9 @@ export class SeedService {
     }
   }
 
-  async seedUsers(): Promise<void> {
-    try {
-      // Criar alguns usuários de exemplo
-      const testUsers = [
-        {
-          email: 'user1@exemplo.com',
-          username: 'usuario1',
-          password: 'User123!',
-          role: UserRole.USER,
-        },
-        {
-          email: 'user2@exemplo.com',
-          username: 'usuario2',
-          password: 'User123!',
-          role: UserRole.USER,
-        },
-      ];
-
-      for (const userData of testUsers) {
-        const existingUser = await this.usersRepository.findOne({
-          where: { email: userData.email },
-        });
-
-        if (!existingUser) {
-          const hashedPassword = await bcrypt.hash(userData.password, 12);
-          const user = this.usersRepository.create({
-            email: userData.email,
-            username: userData.username,
-            password: hashedPassword,
-            role: userData.role,
-          });
-
-          await this.usersRepository.save(user);
-          this.logger.log(`✅ User ${userData.username} created successfully`);
-        }
-      }
-    } catch (error) {
-      this.logger.error('❌ Error seeding users:', error);
-    }
-  }
-
   async runSeed(): Promise<void> {
     this.logger.log('🌱 Starting database seeding...');
     await this.seedAdmin();
-    await this.seedUsers();
     this.logger.log('✅ Database seeding completed');
   }
 }

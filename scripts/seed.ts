@@ -11,11 +11,11 @@ async function bootstrap() {
   const seedService = app.get(SeedService);
 
   try {
-    console.log('🌱 Executando seed do banco de dados...');
+    console.log('🌱 Executing database seed...');
     await seedService.runSeed();
-    console.log('✅ Seed concluído com sucesso!');
+    console.log('✅ Seed completed successfully!');
   } catch (error) {
-    console.error('❌ Erro ao executar seed:', error);
+    console.error('❌ Error executing seed:', error);
   } finally {
     await app.close();
   }

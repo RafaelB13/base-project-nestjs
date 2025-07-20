@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# Script para testar a API de autenticação
+# Script to test the authentication API
 
 API_URL="http://localhost:3000"
 
-echo "🧪 Testando API de Autenticação"
+echo "🧪 Testing Authentication API"
 echo "================================="
 
 # Função para fazer requisições HTTP
@@ -29,7 +29,7 @@ make_request() {
 }
 
 # Teste 1: Registrar usuário
-echo "📝 1. Registrando novo usuário..."
+echo "📝 1. Registering new user..."
 REGISTER_DATA='{
   "email": "teste@exemplo.com",
   "username": "teste123",
@@ -37,7 +37,7 @@ REGISTER_DATA='{
 }'
 
 REGISTER_RESPONSE=$(make_request "POST" "/auth/register" "$REGISTER_DATA")
-echo "Resposta do registro:"
+echo "Registration response:"
 echo "$REGISTER_RESPONSE" | jq '.' 2>/dev/null || echo "$REGISTER_RESPONSE"
 echo ""
 
@@ -45,14 +45,14 @@ echo ""
 TOKEN=$(echo "$REGISTER_RESPONSE" | jq -r '.access_token' 2>/dev/null)
 
 # Teste 2: Login
-echo "🔐 2. Fazendo login..."
+echo "🔐 2. Logging in..."
 LOGIN_DATA='{
   "email": "teste@exemplo.com",
   "password": "senha123"
 }'
 
 LOGIN_RESPONSE=$(make_request "POST" "/auth/login" "$LOGIN_DATA")
-echo "Resposta do login:"
+echo "Login response:"
 echo "$LOGIN_RESPONSE" | jq '.' 2>/dev/null || echo "$LOGIN_RESPONSE"
 echo ""
 
@@ -62,34 +62,34 @@ if [ -z "$TOKEN" ] || [ "$TOKEN" = "null" ]; then
 fi
 
 # Teste 3: Acessar perfil (rota protegida)
-echo "👤 3. Acessando perfil do usuário..."
+echo "👤 3. Accessing user profile..."
 if [ -n "$TOKEN" ] && [ "$TOKEN" != "null" ]; then
     PROFILE_RESPONSE=$(make_request "GET" "/auth/profile" "" "$TOKEN")
-    echo "Resposta do perfil:"
+    echo "Profile response:"
     echo "$PROFILE_RESPONSE" | jq '.' 2>/dev/null || echo "$PROFILE_RESPONSE"
     echo ""
 else
-    echo "❌ Token não disponível para teste do perfil"
+    echo "❌ Token not available for profile test"
     echo ""
 fi
 
 # Teste 4: Listar usuários (rota protegida)
-echo "📋 4. Listando usuários..."
+echo "📋 4. Listing users..."
 if [ -n "$TOKEN" ] && [ "$TOKEN" != "null" ]; then
     USERS_RESPONSE=$(make_request "GET" "/users" "" "$TOKEN")
-    echo "Resposta da lista de usuários:"
+    echo "List of users response:"
     echo "$USERS_RESPONSE" | jq '.' 2>/dev/null || echo "$USERS_RESPONSE"
     echo ""
 else
-    echo "❌ Token não disponível para teste da listagem"
+    echo "❌ Token not available for listing test"
     echo ""
 fi
 
 # Teste 5: Tentar acessar rota protegida sem token
-echo "🚫 5. Tentando acessar rota protegida sem token..."
+echo "🚫 5. Attempting to access protected route without token..."
 NO_AUTH_RESPONSE=$(make_request "GET" "/users" "")
-echo "Resposta sem autenticação:"
+echo "Response without authentication:"
 echo "$NO_AUTH_RESPONSE" | jq '.' 2>/dev/null || echo "$NO_AUTH_RESPONSE"
 echo ""
 
-echo "✅ Testes concluídos!"
+echo "✅ Tests completed!"

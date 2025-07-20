@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Script para gerenciar migrations
-# Uso: ./scripts/migration.sh [comando] [nome_da_migration]
+# Script to manage migrations
+# Usage: ./scripts/migration.sh [command] [migration_name]
 
 set -e
 
@@ -11,65 +11,65 @@ MIGRATION_NAME=$2
 case $COMMAND in
   "create")
     if [ -z "$MIGRATION_NAME" ]; then
-      echo "❌ Nome da migration é obrigatório para criar"
-      echo "Uso: ./scripts/migration.sh create NomeDaMigration"
+      echo "❌ Migration name is required to create"
+      echo "Usage: ./scripts/migration.sh create MigrationName"
       exit 1
     fi
-    echo "🚀 Criando nova migration: $MIGRATION_NAME"
+    echo "🚀 Creating new migration: $MIGRATION_NAME"
     npm run migration:create -- src/database/migrations/$MIGRATION_NAME
     ;;
 
   "generate")
     if [ -z "$MIGRATION_NAME" ]; then
-      echo "❌ Nome da migration é obrigatório para gerar"
-      echo "Uso: ./scripts/migration.sh generate NomeDaMigration"
+      echo "❌ Migration name is required to generate"
+      echo "Usage: ./scripts/migration.sh generate MigrationName"
       exit 1
     fi
-    echo "🔄 Gerando migration baseada nas mudanças: $MIGRATION_NAME"
+    echo "🔄 Generating migration based on changes: $MIGRATION_NAME"
     npm run migration:generate -- src/database/migrations/$MIGRATION_NAME
     ;;
 
   "run")
-    echo "▶️ Executando migrations pendentes..."
+    echo "▶️ Executing pending migrations..."
     npm run migration:run
     ;;
 
   "revert")
-    echo "◀️ Revertendo última migration..."
+    echo "◀️ Reverting last migration..."
     npm run migration:revert
     ;;
 
   "show")
-    echo "📋 Mostrando status das migrations..."
+    echo "📋 Showing migration status..."
     npm run migration:show
     ;;
 
   "reset")
-    echo "⚠️ ATENÇÃO: Isso irá reverter TODAS as migrations!"
-    read -p "Tem certeza? (s/N): " -n 1 -r
+    echo "⚠️ WARNING: This will revert ALL migrations!"
+    read -p "Are you sure? (y/N): " -n 1 -r
     echo
-    if [[ $REPLY =~ ^[Ss]$ ]]; then
-      echo "🔄 Revertendo todas as migrations..."
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+      echo "🔄 Reverting all migrations..."
       # Continua revertendo até não haver mais migrations
       while npm run migration:revert 2>/dev/null; do
-        echo "Migration revertida..."
+        echo "Migration reverted..."
       done
-      echo "✅ Todas as migrations foram revertidas"
+      echo "✅ All migrations have been reverted"
     else
-      echo "❌ Operação cancelada"
+      echo "❌ Operation cancelled"
     fi
     ;;
 
   *)
-    echo "📚 Comandos disponíveis:"
-    echo "  create [nome]   - Criar nova migration vazia"
-    echo "  generate [nome] - Gerar migration baseada nas mudanças"
-    echo "  run            - Executar migrations pendentes"
-    echo "  revert         - Reverter última migration"
-    echo "  show           - Mostrar status das migrations"
-    echo "  reset          - Reverter todas as migrations (CUIDADO!)"
+    echo "📚 Available commands:"
+    echo "  create [name]   - Create new empty migration"
+    echo "  generate [name] - Generate migration based on changes"
+    echo "  run            - Execute pending migrations"
+    echo "  revert         - Revert last migration"
+    echo "  show           - Show migration status"
+    echo "  reset          - Revert all migrations (CAUTION!)"
     echo ""
-    echo "Exemplos:"
+    echo "Examples:"
     echo "  ./scripts/migration.sh create AddUserAvatarColumn"
     echo "  ./scripts/migration.sh generate AddPostsTable"
     echo "  ./scripts/migration.sh run"

@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Script para testar configuração do banco e seed
+# Script to test database configuration and seed
 
-echo "🗄️  Testando configuração do PostgreSQL com Seed Admin"
+echo "🗄️  Testing PostgreSQL configuration with Admin Seed"
 echo "====================================================="
 
 API_URL="http://localhost:3000"
@@ -28,14 +28,14 @@ make_request() {
     fi
 }
 
-echo "🔐 1. Testando login do usuário admin..."
+echo "🔐 1. Testing admin user login..."
 LOGIN_DATA='{
   "email": "admin@sistema.com",
   "password": "Admin@2025!"
 }'
 
 LOGIN_RESPONSE=$(make_request "POST" "/auth/login" "$LOGIN_DATA")
-echo "Resposta do login admin:"
+echo "Admin login response:"
 echo "$LOGIN_RESPONSE" | jq '.' 2>/dev/null || echo "$LOGIN_RESPONSE"
 echo ""
 
@@ -46,21 +46,21 @@ if [ -n "$ADMIN_TOKEN" ] && [ "$ADMIN_TOKEN" != "null" ]; then
     echo "✅ Admin login successful!"
     echo ""
 
-    echo "👤 2. Verificando perfil do admin..."
+    echo "👤 2. Verifying admin profile..."
     PROFILE_RESPONSE=$(make_request "GET" "/auth/profile" "" "$ADMIN_TOKEN")
-    echo "Perfil do admin:"
+    echo "Admin profile:"
     echo "$PROFILE_RESPONSE" | jq '.' 2>/dev/null || echo "$PROFILE_RESPONSE"
     echo ""
 
-    echo "📊 3. Testando endpoint de estatísticas (só admin)..."
+    echo "📊 3. Testing statistics endpoint (admin only)..."
     STATS_RESPONSE=$(make_request "GET" "/users/admin/stats" "" "$ADMIN_TOKEN")
-    echo "Estatísticas do sistema:"
+    echo "System statistics:"
     echo "$STATS_RESPONSE" | jq '.' 2>/dev/null || echo "$STATS_RESPONSE"
     echo ""
 
-    echo "📋 4. Listando todos os usuários (só admin)..."
+    echo "📋 4. Listing all users (admin only)..."
     USERS_RESPONSE=$(make_request "GET" "/users" "" "$ADMIN_TOKEN")
-    echo "Lista de usuários:"
+    echo "List of users:"
     echo "$USERS_RESPONSE" | jq '.' 2>/dev/null || echo "$USERS_RESPONSE"
     echo ""
 else
@@ -68,7 +68,7 @@ else
     echo ""
 fi
 
-echo "🧪 5. Testando registro de usuário comum..."
+echo "🧪 5. Testing common user registration..."
 REGISTER_DATA='{
   "email": "teste@exemplo.com",
   "username": "teste123",
@@ -76,7 +76,7 @@ REGISTER_DATA='{
 }'
 
 REGISTER_RESPONSE=$(make_request "POST" "/auth/register" "$REGISTER_DATA")
-echo "Registro de usuário comum:"
+echo "Common user registration:"
 echo "$REGISTER_RESPONSE" | jq '.' 2>/dev/null || echo "$REGISTER_RESPONSE"
 echo ""
 
@@ -84,17 +84,17 @@ echo ""
 USER_TOKEN=$(echo "$REGISTER_RESPONSE" | jq -r '.access_token' 2>/dev/null)
 
 if [ -n "$USER_TOKEN" ] && [ "$USER_TOKEN" != "null" ]; then
-    echo "🚫 6. Testando acesso negado para usuário comum..."
+    echo "🚫 6. Testing denied access for common user..."
     DENIED_RESPONSE=$(make_request "GET" "/users/admin/stats" "" "$USER_TOKEN")
-    echo "Tentativa de acesso às estatísticas:"
+    echo "Attempt to access statistics:"
     echo "$DENIED_RESPONSE" | jq '.' 2>/dev/null || echo "$DENIED_RESPONSE"
     echo ""
 fi
 
-echo "✅ Teste de configuração concluído!"
+echo "✅ Configuration test completed!"
 echo ""
-echo "📋 Credenciais do Admin:"
-echo "   Email: admin@sistema.com"
-echo "   Senha: Admin@2025!"
+echo "📋 Admin Credentials:"
+echo "   Email: admin@system.com"
+echo "   Password: Admin@2025!"
 echo ""
-echo "⚠️  IMPORTANTE: Altere a senha do admin após o primeiro login!"
+echo "⚠️  IMPORTANT: Change the admin password after the first login!"

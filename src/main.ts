@@ -8,7 +8,6 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Configurar pipe de validação global
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -17,7 +16,6 @@ async function bootstrap() {
     }),
   );
 
-  // Habilitar CORS para desenvolvimento
   app.enableCors();
 
   await app.listen(process.env.PORT ?? 3000);

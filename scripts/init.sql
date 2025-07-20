@@ -1,15 +1,15 @@
--- Arquivo de inicialização do banco de dados
--- Criar extensões necessárias
+-- Database initialization file
+-- Create necessary extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Criar enum para roles de usuário
+-- Create enum for user roles
 DO $$ BEGIN
     CREATE TYPE user_role AS ENUM ('admin', 'user');
 EXCEPTION
-    WHEN duplicate_object THEN null;
+    WHEN duplicate_object THEN NULL;
 END $$;
 
--- Criar tabela de usuários
+-- Create users table
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -20,12 +20,12 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Criar índices para performance
+-- Create indexes for performance
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
 CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
 
--- Função para atualizar updated_at automaticamente
+-- Function to automatically update updated_at
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -34,7 +34,7 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
--- Trigger para atualizar updated_at automaticamente
+-- Trigger to automatically update updated_at
 DROP TRIGGER IF EXISTS update_users_updated_at ON users;
 CREATE TRIGGER update_users_updated_at
     BEFORE UPDATE ON users
